@@ -1,5 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "jsm/controls/OrbitControls.js";
+import { getFresnelMat } from "./getFresnelMat.js";
+
+import getStarfield from "./getStarfield.js";
+
 
 const renderer = new THREE.WebGLRenderer({antialias: true});
 
@@ -16,25 +20,55 @@ const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 
-const geometry = new THREE.IcosahedronGeometry(1,3);
-const material = new THREE.MeshStandardMaterial({color: 0xffffff, flatShading: true});
+const loader = new THREE.TextureLoader();
+
+
+const geometry = new THREE.IcosahedronGeometry(1,12);
+const material = new THREE.MeshStandardMaterial({map: loader.load("textures/earthmap1k.jpg")
+});
 const mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
+
     
+const earthGroup = new THREE.Group();
+earthGroup.rotation.z=-23.4*Math.PI/180;
+earthGroup.add(mesh);
+scene.add(earthGroup);
+
+scene.add(getStarfield({ numStars: 2000 }));
 
 
-const wireMat=new THREE.MeshBasicMaterial({color: 0xffffff, wireframe: true});
-const wireMesh = new THREE.Mesh(geometry, wireMat);
-wireMesh.scale.set(1.01, 1.01, 1.01);
-mesh.add(wireMesh);
+const lightsMat = new THREE.MeshBasicMaterial({
+    map: loader.load("textures/earthlights1k.jpg"),
+    blending: THREE.AdditiveBlending,
+});
+const lightsMesh =new THREE.Mesh(geometry, lightsMat);
+earthGroup.add(lightsMesh);
 
-const hemiLight = new THREE.HemisphereLight(0x0099ff, 0xff1100, 1);
-scene.add(hemiLight);
+const cloudsMat= new THREE.MeshStandardMaterial({
+    map: loader.load("textures/earthcloudmap.jpg"),
+    transparent: true,
+    opacity: 0.8
+});
+const cloudsMesh = new THREE.Mesh(geometry, cloudsMat);
+cloudsMesh.scale.set(1.02,1.02,1.02);
+earthGroup.add(cloudsMesh);
+
+const fresnelMat= getFresnelMat();
+
+const fresnelMesh = new THREE.Mesh(geometry, fresnelMat);
+fresnelMesh.scale.set(1.05,1.05,1.05);
+earthGroup.add(fresnelMesh);
+
+const sunLight= new THREE.DirectionalLight(0xffffff);
+sunLight.position.set(-5,-2,2);
+scene.add(sunLight);
 
 function animate(){
     requestAnimationFrame(animate);
-    mesh.rotation.x += 0.01;
-    mesh.rotation.y += 0.01;
+    //mesh.rotation.x += 0.01;
+    mesh.rotation.y += 0.005;
+    lightsMesh.rotation.y += 0.005;
+    cloudsMesh.rotation.y += 0.005;
     controls.update();
 
     renderer.render(scene,camera);
