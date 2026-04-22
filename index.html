@@ -149,19 +149,21 @@
       embedded
       vr-mode-ui="enabled: false"
       renderer="antialias: true; alpha: true; colorManagement: true"
-      arjs="sourceType: webcam; debugUIEnabled: false;"
+      arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono; maxDetectionRate: 60; canvasWidth: 960; canvasHeight: 720;"
     >
       <a-marker
         preset="hiro"
         smooth="true"
-        smooth-count="10"
-        smooth-tolerance="0.01"
-        smooth-threshold="5"
+        smooth-count="24"
+        smooth-tolerance="0.05"
+        smooth-threshold="12"
         emitevents="true"
         data-hiro-marker
-      >
+      ></a-marker>
+
+      <a-entity data-content-anchor visible="false">
         <a-ring
-          position="0 0.01 0"
+          position="0 0 0"
           rotation="-90 0 0"
           radius-inner="0.28"
           radius-outer="0.42"
@@ -176,7 +178,7 @@
           material="color: #ff5a36; shader: flat"
           animation="property: rotation; to: 0 360 0; loop: true; dur: 3200; easing: linear"
         ></a-box>
-      </a-marker>
+      </a-entity>
 
       <a-entity camera></a-entity>
     </a-scene>

@@ -5,6 +5,72 @@ function setStatus(message) {
   }
 }
 
+function initStickyAnchor(marker, anchor) {
+  if (!window.AFRAME || !marker || !anchor) {
+    return () => {};
+  }
+
+  const { Euler, Quaternion, Vector3 } = AFRAME.THREE;
+  const markerOffset = new Vector3(0, 0, 0);
+  const targetPosition = new Vector3();
+  const lastPosition = new Vector3();
+  const targetQuaternion = new Quaternion();
+  const targetEuler = new Euler(0, 0, 0, "YXZ");
+  const hoverHeight = 0.01;
+  const lossGraceMs = 900;
+  const positionLerpAlpha = 0.22;
+  const yawLerpAlpha = 0.18;
+  let hasPose = false;
+  let lastSeenAt = 0;
+  let rafId = 0;
+
+  const updateAnchorPose = () => {
+    marker.object3D.updateMatrixWorld(true);
+    markerOffset.set(0, hoverHeight, 0);
+    marker.object3D.localToWorld(targetPosition.copy(markerOffset));
+    marker.object3D.getWorldQuaternion(targetQuaternion);
+    targetEuler.setFromQuaternion(targetQuaternion, "YXZ");
+
+    if (!hasPose) {
+      anchor.object3D.position.copy(targetPosition);
+      anchor.object3D.rotation.set(0, targetEuler.y, 0);
+      hasPose = true;
+    } else {
+      anchor.object3D.position.lerp(targetPosition, positionLerpAlpha);
+      const yawDelta = Math.atan2(
+        Math.sin(targetEuler.y - anchor.object3D.rotation.y),
+        Math.cos(targetEuler.y - anchor.object3D.rotation.y)
+      );
+      anchor.object3D.rotation.y += yawDelta * yawLerpAlpha;
+    }
+
+    lastPosition.copy(anchor.object3D.position);
+    anchor.object3D.visible = true;
+    lastSeenAt = performance.now();
+  };
+
+  const tick = () => {
+    const now = performance.now();
+
+    if (marker.object3D.visible) {
+      updateAnchorPose();
+    } else if (hasPose) {
+      anchor.object3D.position.copy(lastPosition);
+      anchor.object3D.visible = now - lastSeenAt < lossGraceMs;
+    }
+
+    rafId = window.requestAnimationFrame(tick);
+  };
+
+  tick();
+
+  return () => {
+    if (rafId) {
+      window.cancelAnimationFrame(rafId);
+    }
+  };
+}
+
 function syncArViewport(scene) {
   const video = document.querySelector(".arjs-video, video");
   const canvas = scene?.canvas ?? document.querySelector(".a-canvas, a-scene canvas");
@@ -101,15 +167,17 @@ function init() {
 
   const scene = document.querySelector("a-scene");
   const marker = document.querySelector("[data-hiro-marker]");
+  const contentAnchor = document.querySelector("[data-content-anchor]");
 
   initViewportSync(scene);
+  initStickyAnchor(marker, contentAnchor);
 
   marker?.addEventListener("markerFound", () => {
-    setStatus("Marker found. You should see a spinning orange cube on the Hiro marker.");
+    setStatus("Marker found. The cube is now using a smoothed anchor for more forgiving tracking.");
   });
 
   marker?.addEventListener("markerLost", () => {
-    setStatus("Marker lost. Point your camera back at the Hiro image.");
+    setStatus("Marker lost. Holding the last pose briefly while tracking recovers.");
   });
 }
 
