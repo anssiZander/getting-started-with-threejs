@@ -1,6 +1,12 @@
-import * as THREE from "three";
+export default function getStarfield(threeOrOptions, maybeOptions = {}) {
+  const hasThreeNamespace = typeof threeOrOptions?.Vector3 === "function";
+  const THREE = hasThreeNamespace ? threeOrOptions : globalThis.THREE;
+  const { numStars = 500 } = hasThreeNamespace ? maybeOptions : threeOrOptions ?? {};
 
-export default function getStarfield({ numStars = 500 } = {}) {
+  if (!THREE) {
+    throw new Error("getStarfield requires a THREE instance.");
+  }
+
   function randomSpherePoint() {
     const radius = Math.random() * 25 + 25;
     const u = Math.random();
@@ -22,7 +28,7 @@ export default function getStarfield({ numStars = 500 } = {}) {
   const positions = [];
   let col;
   for (let i = 0; i < numStars; i += 1) {
-    let p = randomSpherePoint();
+    const p = randomSpherePoint();
     const { pos, hue } = p;
     positions.push(p);
     col = new THREE.Color().setHSL(hue, 0.2, Math.random());
@@ -35,9 +41,7 @@ export default function getStarfield({ numStars = 500 } = {}) {
   const mat = new THREE.PointsMaterial({
     size: 0.2,
     vertexColors: true,
-    map: new THREE.TextureLoader().load(
-      "./textures/circle.png"
-    ),
+    map: new THREE.TextureLoader().load("./textures/circle.png"),
   });
   const points = new THREE.Points(geo, mat);
   return points;

@@ -3,22 +3,144 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Getting Started with Three.js</title>
+    <title>Earth Marker AR</title>
     <style>
+      :root {
+        color-scheme: dark;
+        --panel-bg: rgba(9, 14, 27, 0.72);
+        --panel-border: rgba(144, 203, 255, 0.28);
+        --text-main: #f5fbff;
+        --text-soft: #b8c8de;
+        --accent: #88ddff;
+        --accent-strong: #ffffff;
+      }
+
+      html,
       body {
         margin: 0;
+        min-height: 100%;
+        overflow: hidden;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background:
+          radial-gradient(circle at top, rgba(20, 66, 112, 0.45), transparent 55%),
+          #02050c;
+        color: var(--text-main);
+      }
+
+      .overlay {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 1rem;
+        box-sizing: border-box;
+        z-index: 10;
+      }
+
+      .panel {
+        max-width: min(24rem, calc(100vw - 2rem));
+        padding: 1rem 1.1rem;
+        border: 1px solid var(--panel-border);
+        border-radius: 1rem;
+        background: var(--panel-bg);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+        backdrop-filter: blur(10px);
+        pointer-events: auto;
+      }
+
+      .eyebrow {
+        margin: 0 0 0.35rem;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.25rem, 3.8vw, 1.9rem);
+        line-height: 1.05;
+      }
+
+      p {
+        margin: 0.75rem 0 0;
+        font-size: 0.96rem;
+        line-height: 1.45;
+        color: var(--text-soft);
+      }
+
+      a {
+        color: var(--accent-strong);
+      }
+
+      .status {
+        max-width: min(18rem, calc(100vw - 2rem));
+        align-self: flex-end;
+        font-size: 0.95rem;
+      }
+
+      @media (max-width: 720px) {
+        .overlay {
+          flex-direction: column;
+          gap: 0.75rem;
+          justify-content: flex-start;
+        }
+
+        .status {
+          align-self: stretch;
+        }
       }
     </style>
-    <script type="importmap">
-			{
-				"imports": {
-					"three": "https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js",
-          "jsm/": "https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/"
-        }
-			}
-		</script>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.8/aframe/build/aframe-ar.js"></script>
   </head>
   <body>
+    <div class="overlay">
+      <section class="panel">
+        <p class="eyebrow">Marker AR</p>
+        <h1>Rotating Earth on Hiro</h1>
+        <p>
+          Open this page on your phone, allow camera access, and point at
+          <a href="./textures/hiro.png" target="_blank" rel="noreferrer">hiro.png</a>.
+          The Earth is lifted slightly above the marker so it feels like it is hovering.
+        </p>
+      </section>
+
+      <section class="panel status">
+        <strong>Status</strong>
+        <p data-status-copy>Allow camera access, then point your phone at the Hiro marker.</p>
+      </section>
+    </div>
+
+    <a-scene
+      embedded
+      vr-mode-ui="enabled: false"
+      renderer="antialias: true; alpha: true; colorManagement: true"
+      arjs="sourceType: webcam; debugUIEnabled: false;"
+    >
+      <a-marker
+        preset="hiro"
+        smooth="true"
+        smooth-count="10"
+        smooth-tolerance="0.01"
+        smooth-threshold="5"
+        emitevents="true"
+        data-hiro-marker
+      >
+        <a-entity
+          position="0 0.55 0"
+          rotation="0 0 0"
+          scale="0.32 0.32 0.32"
+          data-earth-anchor
+        ></a-entity>
+      </a-marker>
+
+      <a-entity camera></a-entity>
+    </a-scene>
+
     <script type="module" src="index.js"></script>
   </body>
 </html>
