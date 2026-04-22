@@ -36,12 +36,26 @@
         width: 100% !important;
         height: 100% !important;
         background: transparent !important;
+        z-index: 5 !important;
+        pointer-events: none !important;
+      }
+
+      .arjs-video,
+      video {
+        position: fixed !important;
+        z-index: 1 !important;
+        pointer-events: none !important;
       }
 
       a-scene canvas,
       .a-canvas {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
         background: transparent !important;
-        pointer-events: none;
+        pointer-events: none !important;
+        z-index: 0 !important;
       }
 
       .overlay {

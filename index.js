@@ -19,17 +19,45 @@ function syncArViewport(scene) {
     return false;
   }
 
-  video.style.zIndex = "0";
-  video.style.pointerEvents = "none";
+  const viewportKey = [
+    Math.round(rect.left),
+    Math.round(rect.top),
+    Math.round(rect.width),
+    Math.round(rect.height),
+  ].join(":");
+  const viewportChanged = scene.dataset.viewportKey !== viewportKey;
 
-  canvas.style.position = "fixed";
-  canvas.style.left = `${rect.left}px`;
-  canvas.style.top = `${rect.top}px`;
-  canvas.style.width = `${rect.width}px`;
-  canvas.style.height = `${rect.height}px`;
-  canvas.style.zIndex = "1";
-  canvas.style.pointerEvents = "none";
-  canvas.style.backgroundColor = "transparent";
+  scene.dataset.viewportKey = viewportKey;
+
+  video.style.setProperty("position", "fixed", "important");
+  video.style.setProperty("left", `${rect.left}px`, "important");
+  video.style.setProperty("top", `${rect.top}px`, "important");
+  video.style.setProperty("width", `${rect.width}px`, "important");
+  video.style.setProperty("height", `${rect.height}px`, "important");
+  video.style.setProperty("z-index", "1", "important");
+  video.style.setProperty("pointer-events", "none", "important");
+
+  scene.style.setProperty("position", "fixed", "important");
+  scene.style.setProperty("left", `${rect.left}px`, "important");
+  scene.style.setProperty("top", `${rect.top}px`, "important");
+  scene.style.setProperty("width", `${rect.width}px`, "important");
+  scene.style.setProperty("height", `${rect.height}px`, "important");
+  scene.style.setProperty("z-index", "5", "important");
+  scene.style.setProperty("background", "transparent", "important");
+  scene.style.setProperty("pointer-events", "none", "important");
+
+  canvas.style.setProperty("position", "absolute", "important");
+  canvas.style.setProperty("left", "0", "important");
+  canvas.style.setProperty("top", "0", "important");
+  canvas.style.setProperty("width", "100%", "important");
+  canvas.style.setProperty("height", "100%", "important");
+  canvas.style.setProperty("z-index", "0", "important");
+  canvas.style.setProperty("pointer-events", "none", "important");
+  canvas.style.setProperty("background-color", "transparent", "important");
+
+  if (viewportChanged && typeof scene.resize === "function") {
+    scene.resize();
+  }
 
   return true;
 }
