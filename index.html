@@ -128,7 +128,7 @@
     <div class="overlay">
       <section class="panel">
         <p class="eyebrow">Marker AR</p>
-        <h1>Rotating Earth on Hiro</h1>
+        <h1>Simple Marker Test</h1>
         <p>
           Point at
           <a href="./textures/hiro.png" target="_blank" rel="noreferrer">hiro.png</a>.
@@ -137,7 +137,7 @@
 
       <section class="panel status">
         <strong>Status</strong>
-        <p data-status-copy>Point your phone at the Hiro marker.</p>
+        <p data-status-copy>Point your phone at the Hiro marker. A spinning cube should appear.</p>
       </section>
     </div>
 
@@ -156,12 +156,22 @@
         emitevents="true"
         data-hiro-marker
       >
-        <a-entity
-          position="0 0.55 0"
-          rotation="0 0 0"
-          scale="0.32 0.32 0.32"
-          data-earth-anchor
-        ></a-entity>
+        <a-ring
+          position="0 0.01 0"
+          rotation="-90 0 0"
+          radius-inner="0.28"
+          radius-outer="0.42"
+          material="color: #00e5ff; shader: flat; side: double"
+        ></a-ring>
+
+        <a-box
+          position="0 0.25 0"
+          depth="0.5"
+          height="0.5"
+          width="0.5"
+          material="color: #ff5a36; shader: flat"
+          animation="property: rotation; to: 0 360 0; loop: true; dur: 3200; easing: linear"
+        ></a-box>
       </a-marker>
 
       <a-entity camera></a-entity>
