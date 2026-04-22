@@ -22,13 +22,12 @@
         height: 100%;
         overflow: hidden;
         font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        background: transparent;
+        background: #02050c;
         color: var(--text-main);
       }
 
       body {
-        position: fixed;
-        inset: 0;
+        position: relative;
       }
 
       a-scene {
@@ -39,19 +38,10 @@
         background: transparent !important;
       }
 
-      video {
-        position: fixed !important;
-        inset: 0;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover;
-        z-index: 0 !important;
-      }
-
       a-scene canvas,
       .a-canvas {
         background: transparent !important;
-        z-index: 1 !important;
+        pointer-events: none;
       }
 
       .overlay {
@@ -144,7 +134,7 @@
     <a-scene
       embedded
       vr-mode-ui="enabled: false"
-      renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true; colorManagement: true"
+      renderer="antialias: true; alpha: true; colorManagement: true"
       arjs="sourceType: webcam; debugUIEnabled: false;"
     >
       <a-marker
