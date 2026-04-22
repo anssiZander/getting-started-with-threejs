@@ -130,23 +130,22 @@
         <p class="eyebrow">Marker AR</p>
         <h1>Rotating Earth on Hiro</h1>
         <p>
-          Open this page on your phone, allow camera access, and point at
+          Point at
           <a href="./textures/hiro.png" target="_blank" rel="noreferrer">hiro.png</a>.
-          The Earth is lifted slightly above the marker so it feels like it is hovering.
         </p>
       </section>
 
       <section class="panel status">
         <strong>Status</strong>
-        <p data-status-copy>Allow camera access, then point your phone at the Hiro marker.</p>
+        <p data-status-copy>Point your phone at the Hiro marker.</p>
       </section>
     </div>
 
     <a-scene
       embedded
       vr-mode-ui="enabled: false"
-      renderer="antialias: true; alpha: true; colorManagement: true"
-      arjs="trackingMethod: best; sourceType: webcam; videoTexture: true; debugUIEnabled: false;"
+      renderer="antialias: true; alpha: true; logarithmicDepthBuffer: true; colorManagement: true"
+      arjs="sourceType: webcam; debugUIEnabled: false;"
     >
       <a-marker
         preset="hiro"
